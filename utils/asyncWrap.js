@@ -1,7 +1,7 @@
-const asyncWrap = (fn) => {
+const AsyncWrap = (fn) => {
   return (req, res, next) => {
     fn(req, res, next).catch(next);
   };
 };
 
-module.exports = asyncWrap;
+module.exports = AsyncWrap;
