@@ -11,6 +11,11 @@ const sectionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  classRef: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Class",
+    required: true,
+  },
   subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subject" }],
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
   timeTable: [{ type: mongoose.Schema.Types.ObjectId, ref: "Timetable" }],
