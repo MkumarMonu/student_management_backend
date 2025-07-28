@@ -35,3 +35,25 @@ exports.getClass = AsyncWrap(async (req, res) => {
     .status(200)
     .json({ success: true, message: "Class data fetched successfully!", data });
 });
+
+exports.deleteClass = AsyncWrap(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const data = await Class.findByIdAndDelete({ _id: id });
+    if (!data) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Class not found!" });
+    }
+
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "Class deleted successfully!",
+        data,
+      });
+  } catch (error) {
+    throw new ExpressError(400, "Internal Server Error");
+  }
+});
