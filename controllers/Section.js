@@ -4,6 +4,7 @@ const SubSection = require("../models/SubSection");
 const ExpressError = require("../utils/ExpressErrors");
 const AsyncWrap = require("../utils/asyncWrap");
 const Class = require("../models/Class");
+const { populate } = require("../models/User");
 // CREATE a new section
 exports.createSection = AsyncWrap(async (req, res) => {
   const { classId } = req.params;
@@ -16,6 +17,14 @@ exports.createSection = AsyncWrap(async (req, res) => {
 
   const existClass = await Class.findOne({ _id: classId });
   if (!existClass) throw new ExpressError(400, "Class not found!");
+
+  const alreadyExist = await Section.findOne({
+    $and: [{ classRef: classId, sectionName }],
+  });
+
+  if (alreadyExist) {
+    throw new ExpressError(400, `${sectionName} is already exist!`);
+  }
   // Create a new section with the given name
   const newSection = await Section.create({
     sectionName,
@@ -39,7 +48,13 @@ exports.createSection = AsyncWrap(async (req, res) => {
 
 exports.getAllSectionByClassId = AsyncWrap(async (req, res) => {
   const { classId } = req.params;
-  const sections = await Class.findOne({ _id: classId }).populate("sections");
+  const sections = await Class.findOne({ _id: classId }).populate({
+    path: "sections",
+    populate: [
+      { path: "subjects" },
+      { path: "students", select: "firstName lastName email rollNumber" },
+    ],
+  });
 
   if (!sections) {
     throw new ExpressError(400, "No Class or Section Found!");

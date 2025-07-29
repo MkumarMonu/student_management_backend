@@ -14,6 +14,7 @@ const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 const classRouter = require("./routes/Class");
 const sectionRouter = require("./routes/Section");
+const subjectRouter = require("./routes/Subject");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
@@ -45,6 +46,7 @@ app.use("/api/v1/prentsDetails", prentsDetailsRoutes);
 app.use("/api/v1/class", classRouter);
 app.use("/api/v1/class", classRouter);
 app.use("/api/v1/section", sectionRouter);
+app.use("/api/v1/subject", subjectRouter);
 // app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
 
