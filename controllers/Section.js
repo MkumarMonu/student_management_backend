@@ -40,32 +40,42 @@ exports.createSection = AsyncWrap(async (req, res) => {
 exports.getAllSectionByClassId = AsyncWrap(async (req, res) => {
   const { classId } = req.params;
   const sections = await Class.findOne({ _id: classId }).populate("sections");
+
   if (!sections) {
     throw new ExpressError(400, "No Class or Section Found!");
   }
-  return res
-    .status(200)
-    .json({
-      success: true,
-      message: "Sections fetched successfully!",
-      data: sections,
-    });
+  return res.status(200).json({
+    success: true,
+    message: "Sections fetched successfully!",
+    data: sections,
+  });
 });
 
 // UPDATE a section
 exports.updateSection = AsyncWrap(async (req, res) => {
   const { sectionId } = req.params;
   const { sectionName, sectionDescription } = req.body;
-  const section = await Section.findByIdAndUpdate(
-    { _id: sectionId },
-    { sectionName, sectionDescription },
-    { new: true }
-  );
+  // Validate the input
+  if (!sectionName || !sectionDescription) {
+    throw new ExpressError(400, "All fields are required");
+  }
+  // Find the section to update
+  const existSection = await Section.findOne({ _id: sectionId });
 
+  if (!existSection) throw new ExpressError(400, "Section not found!");
+  // Update the section with the given name and description
+  const updatedSection = await existSection.updateOne({
+    $set: {
+      sectionName,
+      sectionDescription,
+    },
+  });
+
+  console.log("section update from section controller :", updatedSection);
   res.status(200).json({
     success: true,
     message: "Section updated successfully!",
-    data: section,
+    data: updatedSection,
   });
 });
 

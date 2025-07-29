@@ -49,7 +49,7 @@ app.use("/api/v1/section", sectionRouter);
 app.use("/api/v1/reach", contactUsRoute);
 
 app.use((err, req, res, next) => {
-  let { statusCode = "500", message = "Some error Occured" } = err;
+  let { statusCode = 500, message = "Some error Occured" } = err;
   res.status(statusCode).json({ success: false, message: message });
   next(err);
 });

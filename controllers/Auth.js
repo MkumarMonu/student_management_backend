@@ -6,17 +6,17 @@ const otpGenerator = require("otp-generator");
 const mailSender = require("../utils/mailSender");
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 const ParentsDetails = require("../models/ParentsDetails");
+const Section = require("../models/Section");
 require("dotenv").config();
 
 exports.signup = async (req, res) => {
   try {
+    const { classId, sectionId } = req.params;
     const {
       firstName,
       lastName,
       email,
       rollNumber,
-      studentClass,
-      section,
       gender,
       dob,
       password,
@@ -31,8 +31,8 @@ exports.signup = async (req, res) => {
       !lastName ||
       !email ||
       !rollNumber ||
-      !studentClass ||
-      !section ||
+      !classId ||
+      !sectionId ||
       !gender ||
       !dob ||
       !password ||
@@ -78,13 +78,13 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 6. Create parent profile (assuming basic fields for now)
-    const parentsDetails = await ParentsDetails.create({
-      fatherName: null,
-      motherName: null,
-      contactNumber: null,
-      email: null,
-      address: null,
-    });
+    // const parentsDetails = await ParentsDetails.create({
+    //   fatherName: "null",
+    //   motherName: "null",
+    //   contactNumber: "null",
+    //   email: "null",
+    //   address: "null",
+    // });
 
     // 7. Determine approval (Instructor needs approval)
     const approved = accountType === "Instructor" ? false : true;
@@ -95,15 +95,19 @@ exports.signup = async (req, res) => {
       lastName,
       email,
       rollNumber,
-      class: studentClass,
-      section,
+      class: classId,
+      section: sectionId,
       gender,
       dob,
       password: hashedPassword,
       accountType,
       approved,
       image: "image",
-      parentsDetails: parentsDetails._id,
+      // parentsDetails: parentsDetails._id,
+    });
+
+    await Section.findByIdAndUpdate(sectionId, {
+      $push: { students: user._id },
     });
 
     // 9. Respond

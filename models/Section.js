@@ -5,7 +5,7 @@ const sectionSchema = new mongoose.Schema({
   sectionName: {
     type: String,
     required: true,
-    default: "A",
+    unique: true,
   },
   sectionDescription: {
     type: String,

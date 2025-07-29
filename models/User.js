@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      unique: true,
       required: true,
       trim: true,
     },
@@ -65,7 +66,7 @@ const userSchema = new mongoose.Schema(
     },
     parentsDetails: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      // required: true,
       ref: "ParentsDetails",
     },
     courses: [

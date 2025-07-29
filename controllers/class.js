@@ -27,7 +27,7 @@ exports.createClass = AsyncWrap(async (req, res) => {
 });
 
 exports.getClass = AsyncWrap(async (req, res) => {
-  const data = await Class.find();
+  const data = await Class.find().populate("sections");
   if (!data?.data == []) {
     return res.status(400).json({ success: false, message: "No class found!" });
   }
@@ -46,13 +46,11 @@ exports.deleteClass = AsyncWrap(async (req, res) => {
         .json({ success: false, message: "Class not found!" });
     }
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Class deleted successfully!",
-        data,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Class deleted successfully!",
+      data,
+    });
   } catch (error) {
     throw new ExpressError(400, "Internal Server Error");
   }
