@@ -5,6 +5,7 @@ const ExpressError = require("../utils/ExpressErrors");
 const AsyncWrap = require("../utils/asyncWrap");
 const Class = require("../models/Class");
 const { populate } = require("../models/User");
+
 // CREATE a new section
 exports.createSection = AsyncWrap(async (req, res) => {
   const { classId } = req.params;
@@ -32,11 +33,10 @@ exports.createSection = AsyncWrap(async (req, res) => {
     classRef: classId,
   });
 
-  const updatedClass = await existClass.updateOne({
+   await existClass.updateOne({
     $push: { sections: newSection._id },
   });
 
-  console.log("updatedClass from section controller :", updatedClass);
 
   // Return the updated course object in the response
   res.status(200).json({

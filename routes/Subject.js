@@ -1,7 +1,7 @@
-const { addSubject } = require('../controllers/Subject');
+const { addSubject, getSubjectBySectionId } = require('../controllers/Subject');
 
 const subjectRouter = require('express').Router();
 
-subjectRouter.route('/:sectionId').post(addSubject)
+subjectRouter.route('/:sectionId').post(addSubject).get(getSubjectBySectionId)
 
 module.exports = subjectRouter;

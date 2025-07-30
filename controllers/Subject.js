@@ -25,15 +25,37 @@ exports.addSubject = AsyncWrap(async (req, res) => {
     subjectDescription,
   });
 
-  let result = await Section.findByIdAndUpdate(sectionId, {
-    subjects: createdSubject._id,
-  });
+  let result = await Section.findByIdAndUpdate(
+    sectionId,
+    {
+      $push: {
+        subjects: createdSubject._id,
+      },
+    },
+
+    { new: true }
+  );
   console.log(result);
-  return res
-    .status(201)
-    .json({
-      success: true,
-      message: `${subjectName}, added successfully!`,
-      data: createdSubject,
-    });
+  return res.status(201).json({
+    success: true,
+    message: `${subjectName}, added successfully!`,
+    data: createdSubject,
+  });
+});
+
+exports.getSubjectBySectionId = AsyncWrap(async (req, res) => {
+  const { sectionId } = req.params;
+  const subjects = await Subject.find({ section: sectionId }).populate({
+    path: "section",
+    select: "sectionName sectionDescription classRef",
+    populate: [{ path: "classRef", select: "className classTeacher" }],
+  });
+  if (!subjects) {
+    throw new ExpressError(404, "No subjects found in this section");
+  }
+  return res.status(200).json({
+    success: true,
+    message: "All Subjects fetched successfully!",
+    data: subjects,
+  });
 });
