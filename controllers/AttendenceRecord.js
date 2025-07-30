@@ -18,15 +18,24 @@ exports.markAttendence = AsyncWrap(async (req, res) => {
     throw new ExpressError(400, "All fields are requirred!");
   }
 
+  const todayDate = normalizeDate(Date.now());
+  const dateNormalized = normalizeDate(date);
+
+  if (todayDate.getTime() !== dateNormalized.getTime()) {
+    throw new ExpressError(
+      400,
+      "You can not mark the attendance of past or future date!"
+    );
+  }
+
   const userExistInSection = await User.findOne({
-    $and: [{ section: sectionId, _id: studentId }],
+    section: sectionId,
+    _id: studentId,
   });
 
   if (!userExistInSection) {
     throw new ExpressError(404, "Student not found in this section");
   }
-
-  const dateNormalized = normalizeDate(date);
 
   const alreadyMarked = await AttendenceRecord.findOne({
     $and: [{ student: studentId }, { date: dateNormalized }],
