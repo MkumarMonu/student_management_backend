@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    attendenceRecord: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "AttendenceRecord",
+    },
     parentsDetails: {
       type: mongoose.Schema.Types.ObjectId,
       // required: true,

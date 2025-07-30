@@ -25,7 +25,7 @@ exports.addSubject = AsyncWrap(async (req, res) => {
     subjectDescription,
   });
 
-  let result = await Section.findByIdAndUpdate(
+ await Section.findByIdAndUpdate(
     sectionId,
     {
       $push: {
@@ -35,7 +35,7 @@ exports.addSubject = AsyncWrap(async (req, res) => {
 
     { new: true }
   );
-  console.log(result);
+  
   return res.status(201).json({
     success: true,
     message: `${subjectName}, added successfully!`,
