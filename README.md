@@ -37,3 +37,18 @@ The data will be like academic marks, attendence record, all student data,home w
      2. The admin can add, delete, update and view the subject details.
 
      3. We will add the subject in the subject collection and it's id will be added in the sections collection in db.
+
+
+## Attendance Module
+
+     1. This module is used to manage the attendance details. 
+
+     2. When a class teacher mark the attendance of any student then it will be updated in the student collection and the sections collection.
+
+     3. So when the user need the attedance record of any student, we can provide him the attendance record of that student from the student collection 
+
+     4. or if the user need the complete sections attendance we can also give him this detail form the sections collection where we have stored.
+
+     5. the user can not mark the attendance of any future or past date.
+
+     6. You can get the attendance of any section students for a specific date.

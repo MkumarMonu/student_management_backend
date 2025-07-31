@@ -6,7 +6,7 @@ const ExpressError = require("../utils/ExpressErrors");
 
 const normalizeDate = (date) => {
   const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
+  d.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 UTC
   return d;
 };
 
@@ -52,6 +52,7 @@ exports.markAttendence = AsyncWrap(async (req, res) => {
         data: alreadyMarked,
       });
     }
+
     return res.status(200).json({
       success: true,
       message: "Attendance already marked with same status.",
@@ -78,5 +79,141 @@ exports.markAttendence = AsyncWrap(async (req, res) => {
     success: true,
     message: "Attendence marked",
     date: markAttendance,
+  });
+});
+
+exports.getAttendanceDetailsOfASection = AsyncWrap(async (req, res) => {
+  const { sectionId } = req.params;
+  const { date } = req.body;
+
+  if (!sectionId || !date) {
+    throw new ExpressError(400, "Section ID and Date are required!");
+  }
+
+  const normalizedDate = normalizeDate(date);
+
+  const attendanceRecords = await AttendenceRecord.find({
+    section: sectionId,
+    date: normalizedDate,
+  }).populate("student", "firstName lastName email");
+
+  return res.status(200).json({
+    success: true,
+    message: "Attendance data for section retrieved successfully",
+    data: attendanceRecords,
+  });
+});
+
+exports.getStudentAttendance = AsyncWrap(async (req, res) => {
+  const { studentId } = req.params;
+  // const { month, year } = req.query;
+
+  const { sectionId } = req.params;
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    throw new ExpressError(400, "Start and End date are required!");
+  }
+
+  const start = normalizeDate(startDate);
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+
+  const records = await AttendenceRecord.find({
+    student: studentId,
+    section: sectionId,
+
+    date: { $gte: start, $lte: end },
+  });
+
+  // const matchQuery = { student: studentId };
+
+  // if (month && year) {
+  //   const start = new Date(year, month - 1, 1);
+  //   const end = new Date(year, month, 0, 23, 59, 59);
+  //   matchQuery.date = { $gte: start, $lte: end };
+  // }
+
+  // const records = await AttendenceRecord.find(matchQuery).populate("section");
+
+  return res.status(200).json({
+    success: true,
+    message: "Student attendance fetched",
+    data: records,
+  });
+});
+
+exports.getAttendancePercentageForStudent = AsyncWrap(async (req, res) => {
+  const { studentId } = req.params;
+
+  const total = await AttendenceRecord.countDocuments({
+    student: studentId,
+    $or: [{ status: "Present" }, { status: "Absent" }],
+  });
+  const present = await AttendenceRecord.countDocuments({
+    student: studentId,
+    status: "Present",
+  });
+
+  const percentage = total === 0 ? 0 : ((present / total) * 100).toFixed(2);
+
+  return res.status(200).json({
+    success: true,
+    message: "Attendance percentage calculated",
+    data: { total, present, percentage: `${percentage}%` },
+  });
+});
+
+exports.getAbsentStudentsForDateInSection = AsyncWrap(async (req, res) => {
+  const { sectionId } = req.params;
+  const { date } = req.query;
+
+  if (!date) {
+    throw new ExpressError(400, "Date is required");
+  }
+
+  const normalizedDate = normalizeDate(date);
+
+  const absentees = await AttendenceRecord.find({
+    section: sectionId,
+    date: normalizedDate,
+    status: "Absent",
+  }).populate("student", "firstName lastName email");
+
+  return res.status(200).json({
+    success: true,
+    message: "Absent students fetched",
+    data: absentees,
+  });
+});
+
+exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {
+  const { sectionId } = req.params;
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    throw new ExpressError(400, "Start and End date are required!");
+  }
+
+  const start = normalizeDate(startDate);
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+
+  const records = await AttendenceRecord.find({
+    section: sectionId,
+    date: { $gte: start, $lte: end },
+  });
+
+  const stats = {
+    total: records.length,
+    present: records.filter((r) => r.status === "Present").length,
+    absent: records.filter((r) => r.status === "Absent").length,
+    na: records.filter((r) => r.status === "N/A").length,
+  };
+
+  return res.status(200).json({
+    success: true,
+    message: "Section attendance analytics fetched",
+    data: stats,
   });
 });
