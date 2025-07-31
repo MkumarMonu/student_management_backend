@@ -3,11 +3,12 @@ const {
   getAttendanceDetailsOfASection,
   getAttendanceAnalyticsForSection,
   getStudentAttendance,
+  getAttendancePercentageForStudent,
 } = require("../controllers/AttendenceRecord");
 
 const attendanceRecordRouter = require("express").Router();
 
-//mark attendance of student
+// mark attendance of student
 attendanceRecordRouter
   .route("/markAttendence/:sectionId/:studentId")
   .post(markAttendence);
@@ -21,6 +22,11 @@ attendanceRecordRouter
 attendanceRecordRouter
   .route("/attendanceOfAStudent/:sectionId/:studentId")
   .get(getStudentAttendance);
+
+// get the Attendace Percentage of any student for a time period
+attendanceRecordRouter
+  .route("/attendancePercentageOfAStudent/:sectionId/:studentId")
+  .get(getAttendancePercentageForStudent);
 
 // get the attendance analytics of a section
 attendanceRecordRouter

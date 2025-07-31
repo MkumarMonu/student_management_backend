@@ -9,7 +9,7 @@ const normalizeDate = (date) => {
   d.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00 UTC
   return d;
 };
-
+// mark attendance of student
 exports.markAttendence = AsyncWrap(async (req, res) => {
   const { sectionId, studentId } = req.params;
   const { status, date } = req.body;
@@ -82,6 +82,7 @@ exports.markAttendence = AsyncWrap(async (req, res) => {
   });
 });
 
+// get the attendace of a complete section
 exports.getAttendanceDetailsOfASection = AsyncWrap(async (req, res) => {
   const { sectionId } = req.params;
   const { date } = req.body;
@@ -104,6 +105,7 @@ exports.getAttendanceDetailsOfASection = AsyncWrap(async (req, res) => {
   });
 });
 
+// get the attendace of any student for a time period
 exports.getStudentAttendance = AsyncWrap(async (req, res) => {
   const { studentId, sectionId } = req.params;
   // const { month, year } = req.query;
@@ -141,11 +143,13 @@ exports.getStudentAttendance = AsyncWrap(async (req, res) => {
   });
 });
 
+// get the Attendace Percentage of any student for a time period
 exports.getAttendancePercentageForStudent = AsyncWrap(async (req, res) => {
-  const { studentId } = req.params;
+  const { studentId , sectionId} = req.params;
 
   const total = await AttendenceRecord.countDocuments({
     student: studentId,
+    section: sectionId,
     $or: [{ status: "Present" }, { status: "Absent" }],
   });
   const present = await AttendenceRecord.countDocuments({
@@ -185,6 +189,7 @@ exports.getAbsentStudentsForDateInSection = AsyncWrap(async (req, res) => {
   });
 });
 
+// get the attendance analytics of a section
 exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {
   const { sectionId } = req.params;
   const { startDate, endDate } = req.body;
