@@ -105,11 +105,9 @@ exports.getAttendanceDetailsOfASection = AsyncWrap(async (req, res) => {
 });
 
 exports.getStudentAttendance = AsyncWrap(async (req, res) => {
-  const { studentId } = req.params;
+  const { studentId, sectionId } = req.params;
   // const { month, year } = req.query;
-
-  const { sectionId } = req.params;
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate } = req.body;
 
   if (!startDate || !endDate) {
     throw new ExpressError(400, "Start and End date are required!");
