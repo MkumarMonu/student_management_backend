@@ -189,7 +189,7 @@ exports.getAbsentStudentsForDateInSection = AsyncWrap(async (req, res) => {
 
 exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {
   const { sectionId } = req.params;
-  const { startDate, endDate } = req.query;
+  const { startDate, endDate } = req.body;
 
   if (!startDate || !endDate) {
     throw new ExpressError(400, "Start and End date are required!");
@@ -202,7 +202,16 @@ exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {
   const records = await AttendenceRecord.find({
     section: sectionId,
     date: { $gte: start, $lte: end },
-  });
+  }).populate([
+    {
+      path: "student",
+      select: ["firstName"],
+    },
+    {
+      path: "section",
+      select: ["sectionName"],
+    },
+  ]);
 
   const stats = {
     total: records.length,
@@ -215,5 +224,6 @@ exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {
     success: true,
     message: "Section attendance analytics fetched",
     data: stats,
+    attendanceRecords: records,
   });
 });
