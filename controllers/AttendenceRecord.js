@@ -1,5 +1,4 @@
 const AttendenceRecord = require("../models/AttendenceRecord");
-const Section = require("../models/Section");
 const User = require("../models/User");
 const AsyncWrap = require("../utils/asyncWrap");
 const ExpressError = require("../utils/ExpressErrors");
@@ -145,7 +144,7 @@ exports.getStudentAttendance = AsyncWrap(async (req, res) => {
 
 // get the Attendace Percentage of any student for a time period
 exports.getAttendancePercentageForStudent = AsyncWrap(async (req, res) => {
-  const { studentId , sectionId} = req.params;
+  const { studentId, sectionId } = req.params;
 
   const total = await AttendenceRecord.countDocuments({
     student: studentId,
@@ -166,28 +165,28 @@ exports.getAttendancePercentageForStudent = AsyncWrap(async (req, res) => {
   });
 });
 
-exports.getAbsentStudentsForDateInSection = AsyncWrap(async (req, res) => {
-  const { sectionId } = req.params;
-  const { date } = req.query;
+// exports.getAbsentStudentsForDateInSection = AsyncWrap(async (req, res) => {
+//   const { sectionId } = req.params;
+//   const { date } = req.query;
 
-  if (!date) {
-    throw new ExpressError(400, "Date is required");
-  }
+//   if (!date) {
+//     throw new ExpressError(400, "Date is required");
+//   }
 
-  const normalizedDate = normalizeDate(date);
+//   const normalizedDate = normalizeDate(date);
 
-  const absentees = await AttendenceRecord.find({
-    section: sectionId,
-    date: normalizedDate,
-    status: "Absent",
-  }).populate("student", "firstName lastName email");
+//   const absentees = await AttendenceRecord.find({
+//     section: sectionId,
+//     date: normalizedDate,
+//     status: "Absent",
+//   }).populate("student", "firstName lastName email");
 
-  return res.status(200).json({
-    success: true,
-    message: "Absent students fetched",
-    data: absentees,
-  });
-});
+//   return res.status(200).json({
+//     success: true,
+//     message: "Absent students fetched",
+//     data: absentees,
+//   });
+// });
 
 // get the attendance analytics of a section
 exports.getAttendanceAnalyticsForSection = AsyncWrap(async (req, res) => {

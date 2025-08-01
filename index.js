@@ -16,6 +16,7 @@ const classRouter = require("./routes/Class");
 const sectionRouter = require("./routes/Section");
 const subjectRouter = require("./routes/Subject");
 const attendanceRecordRouter = require("./routes/AttendenceRecord");
+const timeTableRouter = require("./routes/TimeTable");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
@@ -49,6 +50,7 @@ app.use("/api/v1/class", classRouter);
 app.use("/api/v1/section", sectionRouter);
 app.use("/api/v1/subject", subjectRouter);
 app.use("/api/v1/attendence", attendanceRecordRouter);
+app.use("/api/v1/timeTable", timeTableRouter);
 // app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
 

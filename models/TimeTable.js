@@ -1,5 +1,36 @@
 const mongoose = require("mongoose");
 
+const periodSchema = new mongoose.Schema({
+  startPeriod: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 12,
+  },
+  endPeriod: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 12,
+    validate: {
+      validator: function (v) {
+        return v >= this.startPeriod;
+      },
+      message: "endPeriod must be greater than or equal to startPeriod",
+    },
+  },
+  subject: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Subject",
+    required: true,
+  },
+  teacherName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+});
+
 const timeTableSchema = new mongoose.Schema({
   day: {
     type: String,
@@ -13,23 +44,11 @@ const timeTableSchema = new mongoose.Schema({
       "Sunday",
     ],
   },
-  class: {
+  section: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Class",
+    ref: "Section",
   },
-  subjectName: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Subject",
-  },
-  teacherName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  timing: {
-    type: Number,
-    require: true,
-  },
+  periods: [periodSchema],
 });
 
-module.export = mongoose.model("TimeTable", timeTableSchema);
+module.exports = mongoose.model("TimeTable", timeTableSchema);
