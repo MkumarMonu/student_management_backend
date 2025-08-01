@@ -11,5 +11,6 @@ timeTableRouter.route("/:sectionId").get(getTimeTableBySection);
 timeTableRouter
   .route("/:sectionId/:subjectId/:periodId")
   .put(updateTimeTablePeriod);
+timeTableRouter.route("/:sectionId/:periodId/:day").put(updateTimeTablePeriod);
 
 module.exports = timeTableRouter;
