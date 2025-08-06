@@ -118,7 +118,6 @@ exports.updateTimeTablePeriod = AsyncWrap(async (req, res) => {
 
 exports.deletePeriodFromTimeTable = AsyncWrap(async (req, res) => {
   const { sectionId, day, periodId } = req.params;
-
   if (!sectionId || !day || !periodId) {
     throw new ExpressError(400, "All fields are required.");
   }
@@ -134,7 +133,6 @@ exports.deletePeriodFromTimeTable = AsyncWrap(async (req, res) => {
 
   const initialLength = timeTable.periods.length;
 
-  // Filter out the period to delete
   timeTable.periods = timeTable.periods.filter(
     (period) => period._id.toString() !== periodId
   );

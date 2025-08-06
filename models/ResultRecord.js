@@ -1,19 +1,61 @@
 const mongoose = require("mongoose");
 
-const resultRecord = new mongoose.Schema({
-  class: {
+const markSchema = new mongoose.Schema({
+  subject: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Class",
+    ref: "Subject",
     required: true,
   },
-  section: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Section",
+  score: {
+    type: Number,
     required: true,
+    min: 0,
   },
-  resultStatus: {
-    type: String,
+  maxMarks: {
+    type: Number,
+    required: true,
   },
 });
 
-module.exports = mongoose.model("ResultRecord", resultRecord);
+const resultRecordSchema = new mongoose.Schema(
+  {
+    class: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: true,
+    },
+    section: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Section",
+      required: true,
+    },
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    resultStatus: {
+      type: String,
+      enum: ["Pass", "Fail", "Pending"],
+      default: "Pending",
+    },
+    marks: [markSchema], 
+    overallPercentage: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+    grade: {
+      type: String,
+    },
+    remarks: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("ResultRecord", resultRecordSchema);
